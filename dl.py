@@ -90,15 +90,23 @@ def download(URL):
             link = base64.b64decode(link)
             link = link.decode("utf-8")
             
-            name = name +'_SS.mp4'
+            name = name +'_Audio.mp3' # Ziel-Audioformat ändern auf MP3
 
-            ydl_opts = {'outtmpl' : name,}
+            ydl_opts = {
+            'format': 'bestaudio',  # Wählt nur Audio ohne Video
+            'postprocessors': [{  # Konfiguriert die Nachbearbeitung für die Audio-Extraktion
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',  # Ziel-Audioformat
+                'preferredquality': '192',  # Qualität der Audio (bitrate)
+                }],
+            'outtmpl': name,  # Ausgabedateiname
+            'noplaylist': True,  # Verhindert das Herunterladen von Playlists
+            }
+           
             with YoutubeDL(ydl_opts) as ydl:
-                ydl.download(link)
-            delpartfiles()
-
-        except KeyError:
-            print("Could not find downloadable URL. Voe might have change their site. Check that you are running the latest version of voe-dl, and if so file an issue on GitHub.")
+                ydl.download([link])
+    except KeyError:
+            print("Could not find downloadable URL. Voe might have changed their site. Check that you are running the latest version of voe-dl, and if so file an issue on GitHub.")
             quit()
     
     print("\n")
